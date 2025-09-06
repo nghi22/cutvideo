@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+{% block title %}Ghép âm thanh - Nghị Edition{% endblock %}
+{% block content %}
+<h1 class="text-2xl font-bold text-blue-700 mb-4">🎶 Ghép file âm thanh</h1>
+<form method="post" enctype="multipart/form-data" class="space-y-4">
+    <label class="block font-medium mb-1">Chọn file âm thanh (có thể chọn nhiều, giữ đúng thứ tự bạn muốn ghép):</label>
+    <input type="file" name="files" accept=".mp3,.wav,.ogg,.flac" multiple required class="block mb-2 border p-2 rounded w-full" onchange="updateFileList(this)">
+    <div id="file-list"></div>
+    <label class="block font-medium mt-3 mb-1">Tên file xuất ra:</label>
+    <input type="text" name="output_name" id="output_name" class="border p-2 rounded w-full" placeholder="Ví dụ: Video STT 1 NghiLam" value="{{ output_name if output_name is defined else '' }}" required>
+    <button type="submit" class="w-full py-2 bg-blue-600 text-white rounded hover:bg-blue-700 font-semibold transition">
+        🟢 Ghép lại làm 1
+    </button>
+</form>
+{% if file_infos and file_infos|length > 0 %}
+<div class="mt-4">
+    <h3 class="font-semibold text-gray-700 mb-2">Danh sách file sẽ ghép (thứ tự giữ nguyên):</h3>
+    <table class="w-full text-left border border-gray-200 bg-gray-50 rounded">
+        <thead><tr class="bg-gray-100">
+            <th class="px-2 py-1">STT</th>
+            <th class="px-2 py-1">Tên file</th>
+            <th class="px-2 py-1">Thời lượng</th>
+        </tr></thead>
+        <tbody>
+        {% for f in file_infos %}
+        <tr>
+            <td class="px-2">{{ loop.index }}</td>
+            <td class="px-2">{{ f.name }}</td>
+            <td class="px-2">{{ f.duration }}</td>
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endif %}
+{% if merged_file %}
+<div class="mt-6 bg-green-100 text-green-800 rounded p-4 text-center shadow">
+    <div class="text-lg mb-1 font-bold">✅ Ghép thành công!</div>
+    <div>Thời lượng file mới: <span class="font-semibold">{{ merged_duration }}</span></div>
+    <a id="download-link" href="{{ merged_url }}" class="block mt-2 px-4 py-2 bg-blue-700 text-white rounded hover:bg-blue-800 font-semibold transition">
+        ⬇️ Tải file ghép về
+    </a>
+</div>
+<script>
+    // Khi đã có file ghép mà chưa tải => bật cảnh báo
+    let downloaded = false;
+    window.onbeforeunload = function(e) {
+        if (!downloaded) {
+            e.preventDefault();
+            e.returnValue = 'Bạn chưa tải file ghép về! Bạn có chắc chắn muốn rời khỏi trang này?';
+            return e.returnValue;
+        }
+    };
+    document.getElementById('download-link').addEventListener('click', function(){
+        downloaded = true;
+        window.onbeforeunload = null; // Tắt cảnh báo sau khi tải
+        // reset giao diện như cũ nếu cần
+        setTimeout(function(){ window.location.href = "/"; }, 300);
+    });
+</script>
+{% endif %}
+<script>
+function updateFileList(input) {
+    let files = input.files;
+    let html = '';
+    if(files.length) {
+        html = '<div class="mt-4"><h3 class="font-semibold text-gray-700 mb-2">Danh sách file sẽ ghép (theo thứ tự):</h3><ol class="list-decimal list-inside">';
+        for(let i=0; i<files.length; i++) {
+            html += `<li><span class='font-mono'>${files[i].name}</span></li>`;
+        }
+        html += '</ol></div>';
+    }
+    document.getElementById('file-list').innerHTML = html;
+}
+</script>
+{% endblock %}

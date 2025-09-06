@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% block title %}Bộ đếm ký tự - Nghị Edition{% endblock %}
+{% block content %}
+<h1 class="text-2xl font-bold text-blue-700 mb-4">📝 Bộ đếm ký tự & chữ</h1>
+<form method="post" id="charcount-form">
+    <textarea id="input_text" name="input_text" rows="6" placeholder="Nhập hoặc dán văn bản vào đây..." class="w-full border rounded p-3 text-lg mb-4" oninput="updateCount()" onpaste="setTimeout(updateCount,10)">{{ text|e }}</textarea>
+    <div class="flex items-center space-x-6 mb-4">
+        <label class="flex items-center space-x-2">
+            <input type="radio" name="count_type" value="chars" {% if count_type == 'chars' %}checked{% endif %} onchange="updateCount()">
+            <span>Đếm số ký tự</span>
+        </label>
+        <label class="flex items-center space-x-2">
+            <input type="radio" name="count_type" value="words" {% if count_type == 'words' %}checked{% endif %} onchange="updateCount()">
+            <span>Đếm số chữ</span>
+        </label>
+    </div>
+</form>
+<div id="count_result" class="text-lg font-semibold text-green-700 mt-3">
+    {% if count_type == 'chars' %}
+        Số ký tự: {{ count }}
+    {% else %}
+        Số chữ: {{ count }}
+    {% endif %}
+</div>
+<script>
+function updateCount() {
+    let text = document.getElementById('input_text').value;
+    let countType = document.querySelector('input[name="count_type"]:checked').value;
+    let count = 0;
+    if(countType === "chars") {
+        count = text.length;
+        document.getElementById('count_result').innerHTML = "Số ký tự: " + count;
+    } else {
+        let words = text.replace(/\n/g,' ').split(' ').filter(w => w.trim());
+        count = words.length;
+        document.getElementById('count_result').innerHTML = "Số chữ: " + count;
+    }
+}
+window.onload = updateCount;
+</script>
+{% endblock %}

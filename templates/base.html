@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %}Nghị Tools{% endblock %}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body { font-family: 'Segoe UI', Arial, sans-serif; }
+        .active-tab { background: #2563eb; color: #fff; }
+    </style>
+</head>
+<body class="bg-gray-100">
+    <div class="max-w-xl mx-auto bg-white rounded-xl shadow-md mt-10 p-8">
+        <!-- Menu Tabs Dùng Chung -->
+        <div class="flex space-x-4 mb-8">
+            <a href="{{ url_for('index') }}"
+               class="py-2 px-5 rounded-lg font-bold
+               {% if request.path=='/' %}active-tab{% else %}text-blue-600 bg-blue-100 hover:bg-blue-200{% endif %}">Ghép âm thanh</a>
+            <a href="{{ url_for('charcount') }}"
+               class="py-2 px-5 rounded-lg font-bold
+               {% if request.path.startswith('/charcount') %}active-tab{% else %}text-blue-600 bg-blue-100 hover:bg-blue-200{% endif %}">Bộ đếm ký tự</a>
+            <a href="{{ url_for('caseconvert') }}"
+               class="py-2 px-5 rounded-lg font-bold
+               {% if request.path.startswith('/caseconvert') %}active-tab{% else %}text-blue-600 bg-blue-100 hover:bg-blue-200{% endif %}">Chuyển hoa/thường</a>
+            <a href="{{ url_for('cutvideo') }}"
+               class="py-2 px-5 rounded-lg font-bold
+               {% if request.path.startswith('/cutvideo') %}active-tab{% else %}text-blue-600 bg-blue-100 hover:bg-blue-200{% endif %}">Cắt video</a>
+        </div>
+
+        <!-- Nội dung động -->
+        {% block content %}
+        {% endblock %}
+
+        <div class="text-sm text-gray-400 mt-8 text-center">
+            Made by Nghị &amp; ChatGPT | v2025
+        </div>
+    </div>
+</body>
+</html>
